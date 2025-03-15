@@ -7,12 +7,18 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\StockMovement;
 use App\Models\Receipt;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class ShopSystemSeeder extends Seeder
 {
     public function run()
     {
+        $adminUser = User::firstOrCreate(
+            ['id' => 1],
+            ['name' => 'Admin', 'email' => 'admin@example.com', 'password' => bcrypt('password')]
+        );
+
         // Create Customers
         $customers = Customer::factory()->count(5)->create();
 
@@ -44,7 +50,7 @@ class ShopSystemSeeder extends Seeder
 
                 // Create Stock Movements for Completed Orders
                 $orderItems->each(function ($item) use ($order) {
-                    StockMovement::create([
+                    StockMovement::updateOrCreate([
                         'product_id' => $item->product_id,
                         'quantity' => $item->quantity,
                         'type' => 'out',
