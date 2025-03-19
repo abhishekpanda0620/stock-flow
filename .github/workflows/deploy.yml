@@ -44,8 +44,8 @@ jobs:
       - name: FTP Deploy
         uses: SamKirkland/FTP-Deploy-Action@v4.2.0
         with:
-          ftp-server: ${{ secrets.FTP_SERVER }}  # e.g., ftp://ftp.yourdomain.com
-          ftp-username: ${{ secrets.FTP_USERNAME }}
-          ftp-password: ${{ secrets.FTP_PASSWORD }}
+          server: ${{ secrets.FTP_SERVER }}  # e.g., ftp://ftp.yourdomain.com
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./  # Adjust if needed
           server-dir: public_html/stockflow  # Deploy to your subdomain folder
