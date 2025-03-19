@@ -42,7 +42,7 @@ jobs:
 
       # 6. Deploy via FTP to the subdomain folder
       - name: FTP Deploy
-        uses: SamKirkland/FTP-Deploy-Action@v4.2.0
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}  # e.g., ftp://ftp.yourdomain.com
           username: ${{ secrets.FTP_USERNAME }}
