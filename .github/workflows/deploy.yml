@@ -1,0 +1,60 @@
+name: Laravel CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-22.04
+
+    steps:
+      # 1. Check out the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2. Configure .env file with secrets
+      - name: Configure .env file with secrets
+        run: |
+          # Copy from .env.example to .env (assumes .env is not committed)
+          cp .env.example .env
+          # Update environment variables with GitHub secrets
+          sed -i "s|^APP_URL=.*|APP_URL=${{ secrets.APP_URL }}|g" .env
+          sed -i "s|^DB_DATABASE=.*|DB_DATABASE=${{ secrets.DB_DATABASE }}|g" .env
+          sed -i "s|^DB_USERNAME=.*|DB_USERNAME=${{ secrets.DB_USERNAME }}|g" .env
+          sed -i "s|^DB_PASSWORD=.*|DB_PASSWORD=${{ secrets.DB_PASSWORD }}|g" .env
+
+      # 3. Setup PHP environment
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'  # Adjust as needed
+
+      # 4. Install PHP dependencies via Composer
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      # 5. Generate optimized autoloader
+      - name: Optimize autoloader
+        run: composer dump-autoload -o
+
+      # 6. Install Node dependencies and build frontend assets (if applicable)
+      - name: Build assets
+        run: |
+          if [ -f package.json ]; then
+            npm ci
+            npm run production
+          else
+            echo "No package.json found, skipping asset build."
+          fi
+
+      # 7. Deploy via FTP to the subdomain folder
+      - name: FTP Deploy
+        uses: SamKirkland/FTP-Deploy-Action@v4.2.0
+        with:
+          ftp-server: ${{ secrets.FTP_SERVER }}  # e.g., ftp://ftp.yourdomain.com
+          ftp-username: ${{ secrets.FTP_USERNAME }}
+          ftp-password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./  # Adjust if needed
+          server-dir: public_html/stockflow  # Deploy to your subdomain folder
