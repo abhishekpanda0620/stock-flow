@@ -48,4 +48,4 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./  # Adjust if needed
-          server-dir: public_html/stockflow  # Deploy to your subdomain folder
+          server-dir: public_html/stockflow/  # Deploy to your subdomain folder
